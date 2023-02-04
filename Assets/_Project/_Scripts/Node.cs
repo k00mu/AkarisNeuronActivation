@@ -4,58 +4,50 @@ using UnityEngine;
 
 namespace GlobalGameJam
 {
-    public class Node
+    public class Node : MonoBehaviour
     {
-        public Vector2 position;
-        public Node parent;
-        private List<Node> neighborNodeList;
+        public Vector2 Position;
+        public Node Parent;
+        public List<Node> NeighborNodeList { get; private set; } = new List<Node>();
 
-        public Node(Vector2 position, Node parent = null)
-        {
-            this.position = position;
-            this.parent = parent;
-            neighborNodeList = new List<Node>();
-        }
+        // public Node(Vector2 position, Node parent = null)
+        // {
+        //     this.Position = position;
+        //     this.parent = parent;
+        //     neighborNodeList = new List<Node>();
+        // }
 
         public void AddNeighbor(Node node)
         {
-            neighborNodeList.Add(node);
+            NeighborNodeList.Add(node);
         }
 
         public void RemoveNeighbor(Node node)
         {
-            neighborNodeList.Remove(node);
+            NeighborNodeList.Remove(node);
         }
 
         public Node GetNeighbor(int index)
         {
-            return neighborNodeList[index];
-        }
-
-        public List<Node> GetNeighborList()
-        {
-            return neighborNodeList;
+            return NeighborNodeList[index];
         }
 
         public int GetNeighborCount()
         {
-            return neighborNodeList.Count;
-        }
-
-        public Node GetParent()
-        {
-            return parent;
+            return NeighborNodeList.Count;
         }
 
         public void DrawGizmos()
         {
             Gizmos.color = Color.red;
-            Gizmos.DrawSphere(position, 0.5f);
+            Gizmos.DrawSphere(Position, 0.5f);
             Gizmos.color = Color.green;
-            foreach (Node node in neighborNodeList)
+            foreach (Node node in NeighborNodeList)
             {
-                Gizmos.DrawLine(position, node.position);
+                Gizmos.DrawLine(Position, node.Position);
             }
         }
+
+
     }
 }

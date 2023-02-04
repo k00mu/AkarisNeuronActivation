@@ -167,7 +167,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f4169b82c1fbb0b478caa7851f95d38f, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  nodePrefab: {fileID: 2666413493997505532, guid: 19ec1dbea97f3a446ad6760a83d7c08a, type: 3}
+  nodePrefab: {fileID: -2213658532633708308, guid: 19ec1dbea97f3a446ad6760a83d7c08a, type: 3}
+  linePrefab: {fileID: -8634279176057645556, guid: e0b814964567d6440b7ff535c1af7aad, type: 3}
+  minimumDistance: 5
+  nodePositionList: []
 --- !u!1 &705507993
 GameObject:
   m_ObjectHideFlags: 0

@@ -37,6 +37,11 @@ namespace GlobalGameJam
             return NeighborNodeList.Count;
         }
 
+        public bool CanMoveTo(Node node)
+        {
+            return NeighborNodeList.Contains(node) || node.NeighborNodeList.Contains(this);
+        }
+
         public void DrawGizmos()
         {
             Gizmos.color = Color.red;

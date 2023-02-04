@@ -6,22 +6,67 @@ namespace GlobalGameJam
 {
     public class UnitTest : MonoBehaviour
     {
+        #region singleton
+        private static UnitTest instance;
+        public static UnitTest Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<UnitTest>();
+                }
+                return instance;
+            }
+        }
+        #endregion
+
         [SerializeField] private Node nodePrefab;
         [SerializeField] private Line linePrefab;
         [SerializeField] private float minimumDistance = 5f;
-        // [SerializeField] private float maximumDistance = 15f;
+        [SerializeField] private float travelDistance = 6f;
+        public float TravelDistance { get { return travelDistance; } }
+
+        private BoxCollider[] boxColliders;
+        Node root;
 
         public List<Vector2> nodePositionList = new List<Vector2>();
 
         private void Awake()
         {
-            Node root = Instantiate(nodePrefab, Vector2.zero, Quaternion.identity, transform);
+            #region singleton
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+            #endregion
+
+            boxColliders = GetComponents<BoxCollider>();
+
+            root = Instantiate(nodePrefab, Vector2.zero, Quaternion.identity, transform);
             root.Position = Vector2.zero;
 
             root.name = "Node " + root.Position;
             nodePositionList.Add(root.Position);
 
             GenerateNodeTree(root);
+        }
+
+        private void Start()
+        {
+            Node destination = GenerateDestination();
+        }
+
+
+        private Node GenerateDestination()
+        {
+            Vector2 index = GetRandomPositionFromNodePositionList();
+            // Node destinationNodeV1 = GetNodeAtPosition(index);
+            return GetNodeAtPositionV2(index);
         }
 
         private bool CanCreateNode(Vector2 position)
@@ -36,18 +81,35 @@ namespace GlobalGameJam
                 }
             }
 
-            return true;
+            // if (position.x < boxColliderComponent.bounds.min.x || position.x > boxColliderComponent.bounds.max.x ||
+            //     position.y < boxColliderComponent.bounds.min.y || position.y > boxColliderComponent.bounds.max.y)
+            // {
+            //     return false;
+            // }
+
+            foreach (BoxCollider boxCollider in boxColliders)
+            {
+                if (boxCollider.bounds.Contains(position))
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
         private void GenerateNodeTree(Node node)
         {
-            if (nodePositionList.Count >= 300) return;
+            // if (nodePositionList.Count >= 1500) return;
 
+            int maxChild = Random.Range(1, 5);
+            int counter = 0;
             for (int i = 0; i < 5; i++)
             {
                 Vector2 position = GetRandomSpawnPosition(node.Position);
                 if (CanCreateNode(position))
                 {
+                    counter++;
                     Node newNode = Instantiate(nodePrefab, position, Quaternion.identity, transform);
                     newNode.Position = position;
                     newNode.name = "Node " + newNode.Position;
@@ -63,76 +125,31 @@ namespace GlobalGameJam
             }
         }
 
-        private void Start()
-        {
-            // spawn a node prefab at each node
-            // SpawnNode(root);
-
-            // draw a line between each node and its parent
-            // SpawnLine(root);
-        }
-
-        // private void SpawnNode(Node node)
-        // {
-        //     Transform nodeTransform = Instantiate(nodePrefab, node.Position, Quaternion.identity, transform);
-        //     nodeTransform.name = "Node " + node.Position;
-        //     for (int i = 0; i < node.GetNeighborCount(); i++)
-        //     {
-        //         SpawnLine(node, node.Position, node.GetNeighbor(i).Position);
-        //         SpawnNode(node.GetNeighbor(i));
-        //     }
-        // }
-
-        // // private void MakeLine(Vector2 startPosition, Vector2 endPosition)
-        // // {
-        // //     Transform lineTransform = Instantiate(linePrefab, Vector3.zero, Quaternion.identity, transform);
-        // //     LineRenderer lineRenderer = lineTransform.GetComponent<LineRenderer>();
-        // //     lineRenderer.SetPosition(0, startPosition);
-        // //     lineRenderer.SetPosition(1, endPosition);
-        // // }
-        // private void OnDrawGizmos()
-        // {
-        //     if (root == null) return;
-
-        //     Node currentNode = root;
-
-        //     DrawGizmos(currentNode);
-        // }
-
-        // private void DrawGizmos(Node node)
-        // {
-        //     node.DrawGizmos();
-        //     for (int i = 0; i < node.GetNeighborCount(); i++)
-        //     {
-        //         DrawGizmos(node.GetNeighbor(i));
-        //     }
-        // }
 
 
-
-        private Vector2 GetRandomSpawnPosition(Vector2 position)
+        public Vector2 GetRandomSpawnPosition(Vector2 position)
         {
             int dir = Random.Range(0, 4);
 
             if (dir == 0)
             {
                 // return position + new Vector2(-1, 1) * Random.Range(minimumDistance, maximumDistance);
-                return position + new Vector2(-1, 1) * 15;
+                return position + new Vector2(-1, 1) * travelDistance;
             }
             else if (dir == 1)
             {
                 // return position + new Vector2(1, 1) * Random.Range(minimumDistance, maximumDistance);
-                return position + new Vector2(1, 1) * 15;
+                return position + new Vector2(1, 1) * travelDistance;
             }
             else if (dir == 2)
             {
                 // return position + new Vector2(-1, -1) * Random.Range(minimumDistance, maximumDistance);
-                return position + new Vector2(-1, -1) * 15;
+                return position + new Vector2(-1, -1) * travelDistance;
             }
             else if (dir == 3)
             {
                 // return position + new Vector2(1, -1) * Random.Range(minimumDistance, maximumDistance);
-                return position + new Vector2(1, -1) * 15;
+                return position + new Vector2(1, -1) * travelDistance;
             }
             else
             {
@@ -140,43 +157,19 @@ namespace GlobalGameJam
             }
         }
 
-        // private Node GetNodeAtPosition(Vector2 position)
-        // {
-        //     if (root == null)
-        //     {
-        //         return null;
-        //     }
+        public Node GetNodeAtPositionV1(Vector2 position)
+        {
+            return GameObject.Find("Node " + position).GetComponent<Node>();
+        }
 
-        //     Node currentNode = root;
+        public Node GetNodeAtPositionV2(Vector2 position)
+        {
+            return Physics.OverlapSphere(position, minimumDistance / 2)[0].GetComponent<Node>();
+        }
 
-        //     return CheckNodePosition(currentNode, position);
-        // }
-
-        // private Node CheckNodePosition(Node node, Vector2 position)
-        // {
-        //     if (node.Position == position)
-        //     {
-        //         return node;
-        //     }
-
-        //     for (int i = 0; i < node.GetNeighborCount(); i++)
-        //     {
-        //         CheckNodePosition(node.GetNeighbor(i), position);
-        //     }
-
-        //     return null;
-        // }
-
-        // private Vector2 GetRandomPositionFromNodePositionList()
-        // {
-        //     return nodePositionList[Random.Range(0, nodePositionList.Count)];
-        // }
-
-        // public void SpawnLine(Transform start, Transform end)
-        // {
-        //     LineRenderer lineRenderer = start.GetComponent<LineRenderer>();
-        //     lineRenderer.SetPosition(0, start.position);
-        //     lineRenderer.SetPosition(1, end.position);
-        // }
+        public Vector2 GetRandomPositionFromNodePositionList()
+        {
+            return nodePositionList[Random.Range(0, nodePositionList.Count)];
+        }
     }
 }

@@ -138,6 +138,8 @@ namespace Akari
             Position = newPosition;
             transform.position = Position;
 
+            AudioManager.Instance.PlaySFX("Move");
+
             NodeType expression = nextNode.DoSomethingToPlayerBasedOnNodeType();
 
             akariExpression.SetExpression(expression);

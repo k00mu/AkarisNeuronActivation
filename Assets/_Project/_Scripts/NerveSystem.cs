@@ -31,6 +31,8 @@ namespace Akari
         [SerializeField] private float travelDistance = 6f;
         public float TravelDistance { get { return travelDistance; } }
 
+        public int Score;
+
         [SerializeField] private Timer timer;
 
         private BoxCollider[] boxColliders;
@@ -45,6 +47,8 @@ namespace Akari
         [SerializeField] private int badNodeCount = 5;
         private void Awake()
         {
+            Score = 0;
+
             #region singleton
             if (instance == null)
             {
@@ -77,6 +81,7 @@ namespace Akari
         private void Start()
         {
             timer.StartTimer(30f);
+            AudioManager.Instance.PlayBGM();
 
             Restart();
         }

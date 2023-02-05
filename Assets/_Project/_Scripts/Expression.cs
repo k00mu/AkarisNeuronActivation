@@ -24,12 +24,14 @@ namespace Akari
                 case NodeType.Normal:
                     break;
                 case NodeType.Bad:
-                    Debug.Log("Awikwok");
                     StartCoroutine(PlayExpression(NegativeSprite));
+                    AudioManager.Instance.PlaySFX("Negative");
                     NerveSystem.Instance.ReduceTimer(5f);
                     break;
                 case NodeType.Destination:
                     StartCoroutine(PlayExpression(PositiveSprite));
+                    AudioManager.Instance.PlaySFX("Positive");
+                    NerveSystem.Instance.Score++;
                     NerveSystem.Instance.IncreaseTimer();
                     break;
                 default:

@@ -1,5 +1,4 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
@@ -32,8 +31,12 @@ namespace Akari
         [SerializeField] private float travelDistance = 6f;
         public float TravelDistance { get { return travelDistance; } }
 
+        [SerializeField] private Timer timer;
+
         private BoxCollider[] boxColliders;
-        Node root;
+        private Node root;
+
+        public bool GameOver { get; private set; }
 
         public List<Vector2> nodePositionList = new List<Vector2>();
 
@@ -73,7 +76,18 @@ namespace Akari
 
         private void Start()
         {
+            timer.StartTimer(30f);
+
             Restart();
+        }
+
+        private void Update()
+        {
+            if (timer.TimeLeft <= 0)
+            {
+                timer.StopTimer();
+                GameOver = true;
+            }
         }
 
         public void Restart()
@@ -92,6 +106,21 @@ namespace Akari
             {
                 badNode.SetType(NodeType.Normal);
             }
+        }
+
+        public void IncreaseTimer()
+        {
+            timer.IncreaseTimer(CountTimer(GetNodeAtPositionV2(Player.Instance.Position), destinationNode));
+        }
+
+        public void IncreaseTimer(float amount)
+        {
+            timer.IncreaseTimer(amount);
+        }
+
+        public void ReduceTimer(float amount)
+        {
+            timer.ReduceTimer(amount);
         }
 
         private List<Node> GenerateBadNodes()
@@ -170,6 +199,7 @@ namespace Akari
                 if (CanCreateNode(position))
                 {
                     Node newNode = Instantiate(nodePrefab, position, Quaternion.identity, transform);
+                    newNode.SetType(NodeType.Normal);
                     newNode.Position = position;
                     newNode.name = "Node " + newNode.Position;
                     nodePositionList.Add(newNode.Position);
@@ -243,6 +273,16 @@ namespace Akari
         public Vector2 GetRandomPositionFromNodePositionList()
         {
             return nodePositionList[UnityEngine.Random.Range(0, nodePositionList.Count)];
+        }
+
+        private int CountTimer(Node startNode, Node endNode)
+        {
+            Vector3 startPosition = startNode.Position;
+            Vector3 endPosition = endNode.Position;
+
+            float distance = Vector3.Distance(startPosition, endPosition);
+
+            return Mathf.RoundToInt((distance * 2) / travelDistance);
         }
     }
 }

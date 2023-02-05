@@ -12,35 +12,36 @@ namespace Akari
 
         public NodeType Type { get; private set; }
 
-        [SerializeField] private Mesh normalMesh;
-        [SerializeField] private Mesh badMesh;
-        [SerializeField] private Mesh destinationMesh;
-        private MeshFilter meshFilter;
-        private MeshRenderer meshRenderer;
+        // [SerializeField] private Mesh normalMesh;
+        // [SerializeField] private Mesh badMesh;
+        // [SerializeField] private Mesh destinationMesh;
+
+        [SerializeField] private MeshRenderer[] meshRenderer;
 
         public void SetType(NodeType type)
         {
             Type = type;
-            if (meshFilter == null)
-                meshFilter = GetComponent<MeshFilter>();
-            if (meshRenderer == null)
-                meshRenderer = GetComponent<MeshRenderer>();
             switch (Type)
             {
                 case NodeType.Normal:
-                    if (normalMesh) meshFilter.mesh = normalMesh;
-                    meshRenderer.material.color = Color.white;
+                    ChangeMeshColor(Color.white);
                     break;
                 case NodeType.Bad:
-                    if (badMesh) meshFilter.mesh = badMesh;
-                    meshRenderer.material.color = Color.red;
+                    ChangeMeshColor(Color.red);
                     break;
                 case NodeType.Destination:
-                    if (destinationMesh) meshFilter.mesh = destinationMesh;
-                    meshRenderer.material.color = Color.green;
+                    ChangeMeshColor(Color.green);
                     break;
                 default:
                     break;
+            }
+        }
+
+        private void ChangeMeshColor(Color color)
+        {
+            foreach (var item in meshRenderer)
+            {
+                item.material.color = color;
             }
         }
 

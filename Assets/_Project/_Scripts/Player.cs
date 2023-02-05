@@ -6,12 +6,39 @@ namespace Akari
 {
     public class Player : MonoBehaviour
     {
+        #region singleton
+        private static Player instance;
+        public static Player Instance
+        {
+            get
+            {
+                if (instance == null)
+                {
+                    instance = FindObjectOfType<Player>();
+                }
+                return instance;
+            }
+        }
+        #endregion
+
         public Vector2 Position { get; private set; }
 
         private Expression akariExpression;
 
         private void Awake()
         {
+            #region singleton
+            if (instance == null)
+            {
+                instance = this;
+            }
+            else
+            {
+                Destroy(gameObject);
+            }
+            #endregion
+
+
             akariExpression = GetComponentInChildren<Expression>();
         }
 
@@ -23,6 +50,11 @@ namespace Akari
 
         private void Update()
         {
+            if (NerveSystem.Instance.GameOver)
+            {
+                return;
+            }
+
             if (Input.GetMouseButtonDown(0))
             {
                 TryToMove();

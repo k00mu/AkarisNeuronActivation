@@ -26,9 +26,11 @@ namespace Akari
                 case NodeType.Bad:
                     Debug.Log("Awikwok");
                     StartCoroutine(PlayExpression(NegativeSprite));
+                    NerveSystem.Instance.ReduceTimer(5f);
                     break;
                 case NodeType.Destination:
                     StartCoroutine(PlayExpression(PositiveSprite));
+                    NerveSystem.Instance.IncreaseTimer();
                     break;
                 default:
                     break;

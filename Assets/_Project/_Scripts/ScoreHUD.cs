@@ -9,7 +9,8 @@ namespace Akari
 
         private void Update()
         {
-            scoreText.text = NerveSystem.Instance.Score.ToString();
+            if(NerveSystem.Instance.Score != null)
+                scoreText.text = NerveSystem.Instance.Score.ToString();
         }
     }
 }

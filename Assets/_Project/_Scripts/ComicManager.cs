@@ -20,6 +20,12 @@ namespace Akari
                 spriteRenderer.sprite = s;
                 yield return new WaitForSeconds(duration);
             }
+            StopSlideshow();
+        }
+
+        public void StopSlideshow()
+        {
+            spriteRenderer.sprite = null;
         }
     }
 }

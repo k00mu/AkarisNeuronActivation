@@ -54,6 +54,10 @@ namespace Akari
         {
             if (NerveSystem.Instance.GameOver)
             {
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    NerveSystem.Instance.Restart();
+                }
                 return;
             }
 
@@ -112,7 +116,7 @@ namespace Akari
         private void TryToMove(int x, int y)
         {
             Vector2 newPosition = new Vector2(Position.x + x * NerveSystem.Instance.TravelDistance, Position.y + y * NerveSystem.Instance.TravelDistance);
-            Debug.Log(newPosition);
+            //Debug.Log(newPosition);
 
             Node nextNode = NerveSystem.Instance.GetNodeAtPositionV2(newPosition);
             Node currentNode = NerveSystem.Instance.GetNodeAtPositionV2(Position);
@@ -139,7 +143,12 @@ namespace Akari
 
             if (dustFX != null)
             {
-                StartCoroutine(DestroyDust(Instantiate(dustFX, Position, Quaternion.identity), 3));
+                Vector2 dir = newPosition - Position;
+                GameObject dust = Instantiate(dustFX, Position, Quaternion.identity);
+                StartCoroutine(DestroyDust(dust, 10));
+                Debug.Log(dir + " Angle " + AngleBetweenVector2(Vector2.right, dir));
+                dust.transform.RotateAround(Position, Vector3.forward, AngleBetweenVector2(Vector2.right, dir));
+
             }
 
             Position = newPosition;
@@ -156,6 +165,13 @@ namespace Akari
         {
             yield return new WaitForSeconds(afterSecond);
             Destroy(dust);
+        }
+
+        float AngleBetweenVector2(Vector2 vec1, Vector2 vec2)
+        {
+            Vector2 vec1Rotated90 = new Vector2(-vec1.y, vec1.x);
+            float sign = (Vector2.Dot(vec1Rotated90, vec2) < 0) ? -1.0f : 1.0f;
+            return Vector2.Angle(vec1, vec2) * sign;
         }
     }
 }

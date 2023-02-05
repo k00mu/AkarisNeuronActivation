@@ -10,6 +10,41 @@ namespace GlobalGameJam
         public Node Parent;
         public List<Node> NeighborNodeList { get; private set; } = new List<Node>();
 
+        public enum NodeType
+        {
+            Normal,
+            Bad,
+            Destination
+        }
+
+        public NodeType Type { get; private set; }
+
+        [SerializeField] private Mesh normalMesh;
+        [SerializeField] private Mesh badMesh;
+        [SerializeField] private Mesh destinationMesh;
+        private MeshFilter meshFilter;
+
+        public void SetType(NodeType type)
+        {
+            Type = type;
+            if (meshFilter == null)
+                meshFilter = GetComponent<MeshFilter>();
+            switch (Type)
+            {
+                case NodeType.Normal:
+                    meshFilter.mesh = normalMesh;
+                    break;
+                case NodeType.Bad:
+                    meshFilter.mesh = badMesh;
+                    break;
+                case NodeType.Destination:
+                    meshFilter.mesh = destinationMesh;
+                    break;
+                default:
+                    break;
+            }
+        }
+
         // public Node(Vector2 position, Node parent = null)
         // {
         //     this.Position = position;

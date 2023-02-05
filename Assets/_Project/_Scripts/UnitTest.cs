@@ -32,6 +32,9 @@ namespace GlobalGameJam
 
         public List<Vector2> nodePositionList = new List<Vector2>();
 
+        private Node destination;
+        private List<Node> badNodes = new List<Node>();
+
         private void Awake()
         {
             #region singleton
@@ -58,15 +61,45 @@ namespace GlobalGameJam
 
         private void Start()
         {
-            Node destination = GenerateDestination();
+            GenerateDestination();
+            ResetBadNodes();
+            GenerateBadNodes();
         }
 
+        private void ResetBadNodes()
+        {
+            foreach (Node badNode in badNodes)
+            {
+                badNode.SetType(Node.NodeType.Normal);
+            }
+        }
+
+        private List<Node> GenerateBadNodes()
+        {
+            List<Node> badNodes = new List<Node>();
+
+            for (int i = 0; i < 10; i++)
+            {
+                Vector2 index = GetRandomPositionFromNodePositionList();
+                Node badNode = GetNodeAtPositionV2(index);
+                badNode.SetType(Node.NodeType.Bad);
+                badNode.name = "Node " + badNode.Position + " (Bad)";
+                badNodes.Add(badNode);
+            }
+
+            return badNodes;
+        }
 
         private Node GenerateDestination()
         {
             Vector2 index = GetRandomPositionFromNodePositionList();
             // Node destinationNodeV1 = GetNodeAtPosition(index);
-            return GetNodeAtPositionV2(index);
+            if (destination) destination.SetType(Node.NodeType.Normal);
+
+            destination = GetNodeAtPositionV2(index);
+            destination.SetType(Node.NodeType.Destination);
+            destination.name = "Node " + destination.Position + " (Destination)";
+            return destination;
         }
 
         private bool CanCreateNode(Vector2 position)
@@ -100,16 +133,14 @@ namespace GlobalGameJam
 
         private void GenerateNodeTree(Node node)
         {
-            // if (nodePositionList.Count >= 1500) return;
+            if (nodePositionList.Count >= 500) return;
 
-            int maxChild = Random.Range(1, 5);
-            int counter = 0;
-            for (int i = 0; i < 5; i++)
+            for (int i = 0; i < 4; i++)
             {
                 Vector2 position = GetRandomSpawnPosition(node.Position);
+
                 if (CanCreateNode(position))
                 {
-                    counter++;
                     Node newNode = Instantiate(nodePrefab, position, Quaternion.identity, transform);
                     newNode.Position = position;
                     newNode.name = "Node " + newNode.Position;

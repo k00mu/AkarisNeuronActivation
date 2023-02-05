@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GlobalGameJam
+namespace Akari
 {
     public class CameraMovement : MonoBehaviour
     {

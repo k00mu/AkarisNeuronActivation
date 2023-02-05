@@ -4,7 +4,7 @@ Shader "Custom/MaskInvert"
     {
         _Color ("Main Color", Color) = (1,1,1,1)
 
-        _MainTex ("Base (RGB) Gloss (A)", 2D) = "white" {}
+        _MainTex("Albedo (RGB)", 2D) = "white" {}
     }
     
     Category 

@@ -2,20 +2,32 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GlobalGameJam
+namespace Akari
 {
     public class Player : MonoBehaviour
     {
         public Vector2 Position { get; private set; }
 
+        private Expression akariExpression;
+
+        private void Awake()
+        {
+            akariExpression = GetComponentInChildren<Expression>();
+        }
+
         private void Start()
         {
-            Position = UnitTest.Instance.GetRandomPositionFromNodePositionList();
+            Position = NerveSystem.Instance.GetRandomPositionFromNodePositionList();
             transform.position = Position;
         }
 
         private void Update()
         {
+            if (Input.GetMouseButtonDown(0))
+            {
+                TryToMove();
+            }
+
             if (Input.GetKeyDown(KeyCode.Q))
             {
                 TryToMove(-1, 1);
@@ -37,26 +49,66 @@ namespace GlobalGameJam
             }
         }
 
+        // TODO: get mouse position and convert it to one of the 4 directions
+        private void TryToMove()
+        {
+            Vector2 mousePosition = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 direction = mousePosition - Position;
+            direction.Normalize();
+
+            if (direction.x > 0 && direction.y > 0)
+            {
+                TryToMove(1, 1);
+            }
+            else if (direction.x > 0 && direction.y < 0)
+            {
+                TryToMove(1, -1);
+            }
+            else if (direction.x < 0 && direction.y > 0)
+            {
+                TryToMove(-1, 1);
+            }
+            else if (direction.x < 0 && direction.y < 0)
+            {
+                TryToMove(-1, -1);
+            }
+        }
+
+
         private void TryToMove(int x, int y)
         {
-            Vector2 newPosition = new Vector2(Position.x + x * UnitTest.Instance.TravelDistance, Position.y + y * UnitTest.Instance.TravelDistance);
+            Vector2 newPosition = new Vector2(Position.x + x * NerveSystem.Instance.TravelDistance, Position.y + y * NerveSystem.Instance.TravelDistance);
             Debug.Log(newPosition);
 
-            if (!UnitTest.Instance.GetNodeAtPositionV1(Position).CanMoveTo(UnitTest.Instance.GetNodeAtPositionV1(newPosition)))
+            Node nextNode = NerveSystem.Instance.GetNodeAtPositionV2(newPosition);
+            Node currentNode = NerveSystem.Instance.GetNodeAtPositionV2(Position);
+            if (nextNode == null || currentNode == null || !currentNode.CanMoveTo(nextNode))
             {
+                if (nextNode == null)
+                {
+                    Debug.Log("nextNode is null");
+                }
+
+                if (currentNode == null)
+                {
+                    Debug.Log("currentNode is null");
+                    return;
+                }
+
+                if (!currentNode.CanMoveTo(nextNode))
+                {
+                    Debug.Log("currentNode can't move to nextNode");
+                }
+
                 return;
             }
 
             Position = newPosition;
             transform.position = Position;
 
-            // if (UnitTest.Instance.nodePositionList.Contains(newPosition))
-            // {
-            //     if (UnitTest.Instance.GetNodeAtPositionV2(newPosition).NeighborNodeList.Contains(UnitTest.Instance.GetNodeAtPositionV2(newPosition)))
-            //     {
-            //         
-            //     }
-            // }
+            NodeType expression = nextNode.DoSomethingToPlayerBasedOnNodeType();
+
+            akariExpression.SetExpression(expression);
         }
     }
 }

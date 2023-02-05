@@ -1,24 +1,29 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GlobalGameJam
+namespace Akari
 {
-    public class UnitTest : MonoBehaviour
+    public class NerveSystem : MonoBehaviour
     {
         #region singleton
-        private static UnitTest instance;
-        public static UnitTest Instance
+        private static NerveSystem instance;
+        public static NerveSystem Instance
         {
             get
             {
                 if (instance == null)
                 {
-                    instance = FindObjectOfType<UnitTest>();
+                    instance = FindObjectOfType<NerveSystem>();
                 }
                 return instance;
             }
         }
+        #endregion
+
+        #region events
+        public Action<Node> onDestinationGenerated;
         #endregion
 
         [SerializeField] private Node nodePrefab;
@@ -32,9 +37,9 @@ namespace GlobalGameJam
 
         public List<Vector2> nodePositionList = new List<Vector2>();
 
-        private Node destination;
-        private List<Node> badNodes = new List<Node>();
-
+        private Node destinationNode;
+        private List<Node> badNodeList = new List<Node>();
+        [SerializeField] private int badNodeCount = 5;
         private void Awake()
         {
             #region singleton
@@ -59,47 +64,70 @@ namespace GlobalGameJam
             GenerateNodeTree(root);
         }
 
+        #region events
+        public void NotifyDestinationGenerated(Node node)
+        {
+            onDestinationGenerated?.Invoke(node);
+        }
+        #endregion
+
         private void Start()
         {
-            GenerateDestination();
+            Restart();
+        }
+
+        public void Restart()
+        {
             ResetBadNodes();
             GenerateBadNodes();
+
+            Node newDestination = GenerateDestination();
+
+            NotifyDestinationGenerated(newDestination);
         }
 
         private void ResetBadNodes()
         {
-            foreach (Node badNode in badNodes)
+            foreach (Node badNode in badNodeList)
             {
-                badNode.SetType(Node.NodeType.Normal);
+                badNode.SetType(NodeType.Normal);
             }
         }
 
         private List<Node> GenerateBadNodes()
         {
-            List<Node> badNodes = new List<Node>();
+            badNodeList = new List<Node>();
 
-            for (int i = 0; i < 10; i++)
+            for (int i = 0; i < badNodeCount; i++)
             {
                 Vector2 index = GetRandomPositionFromNodePositionList();
                 Node badNode = GetNodeAtPositionV2(index);
-                badNode.SetType(Node.NodeType.Bad);
+                if (badNode == destinationNode || badNode == null) continue;
+                badNode.SetType(NodeType.Bad);
                 badNode.name = "Node " + badNode.Position + " (Bad)";
-                badNodes.Add(badNode);
+                badNodeList.Add(badNode);
             }
 
-            return badNodes;
+            return badNodeList;
         }
 
-        private Node GenerateDestination()
+        private Node GenerateDestination(bool retry = false)
         {
             Vector2 index = GetRandomPositionFromNodePositionList();
             // Node destinationNodeV1 = GetNodeAtPosition(index);
-            if (destination) destination.SetType(Node.NodeType.Normal);
+            if (destinationNode) destinationNode.SetType(NodeType.Normal);
 
-            destination = GetNodeAtPositionV2(index);
-            destination.SetType(Node.NodeType.Destination);
-            destination.name = "Node " + destination.Position + " (Destination)";
-            return destination;
+            destinationNode = GetNodeAtPositionV2(index);
+
+            if (destinationNode == null && !retry) GenerateDestination(true);
+
+            else if (destinationNode == null && retry) return null;
+
+            destinationNode.SetType(NodeType.Destination);
+
+            destinationNode.name = "Node " + destinationNode.Position + " (Destination)";
+
+            return destinationNode;
         }
 
         private bool CanCreateNode(Vector2 position)
@@ -156,11 +184,9 @@ namespace GlobalGameJam
             }
         }
 
-
-
         public Vector2 GetRandomSpawnPosition(Vector2 position)
         {
-            int dir = Random.Range(0, 4);
+            int dir = UnityEngine.Random.Range(0, 4);
 
             if (dir == 0)
             {
@@ -188,19 +214,35 @@ namespace GlobalGameJam
             }
         }
 
-        public Node GetNodeAtPositionV1(Vector2 position)
-        {
-            return GameObject.Find("Node " + position).GetComponent<Node>();
-        }
-
         public Node GetNodeAtPositionV2(Vector2 position)
         {
-            return Physics.OverlapSphere(position, minimumDistance / 2)[0].GetComponent<Node>();
+            Collider[] colliders = Physics.OverlapSphere(position, minimumDistance);
+            if (colliders.Length > 0)
+            {
+                // return nearest node
+                Node nearestNode = null;
+                float nearestDistance = Mathf.Infinity;
+                foreach (Collider collider in colliders)
+                {
+                    Node node = collider.GetComponent<Node>();
+                    if (node)
+                    {
+                        float distance = Vector2.Distance(node.Position, position);
+                        if (distance < nearestDistance)
+                        {
+                            nearestDistance = distance;
+                            nearestNode = node;
+                        }
+                    }
+                }
+                return nearestNode;
+            }
+            return null;
         }
 
         public Vector2 GetRandomPositionFromNodePositionList()
         {
-            return nodePositionList[Random.Range(0, nodePositionList.Count)];
+            return nodePositionList[UnityEngine.Random.Range(0, nodePositionList.Count)];
         }
     }
 }

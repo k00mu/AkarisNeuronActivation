@@ -2,7 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-namespace GlobalGameJam
+namespace Akari
 {
     public class Node : MonoBehaviour
     {
@@ -10,39 +10,60 @@ namespace GlobalGameJam
         public Node Parent;
         public List<Node> NeighborNodeList { get; private set; } = new List<Node>();
 
-        public enum NodeType
-        {
-            Normal,
-            Bad,
-            Destination
-        }
-
         public NodeType Type { get; private set; }
 
         [SerializeField] private Mesh normalMesh;
         [SerializeField] private Mesh badMesh;
         [SerializeField] private Mesh destinationMesh;
         private MeshFilter meshFilter;
+        private MeshRenderer meshRenderer;
 
         public void SetType(NodeType type)
         {
             Type = type;
             if (meshFilter == null)
                 meshFilter = GetComponent<MeshFilter>();
+            if (meshRenderer == null)
+                meshRenderer = GetComponent<MeshRenderer>();
             switch (Type)
             {
                 case NodeType.Normal:
-                    meshFilter.mesh = normalMesh;
+                    if (normalMesh) meshFilter.mesh = normalMesh;
+                    meshRenderer.material.color = Color.white;
                     break;
                 case NodeType.Bad:
-                    meshFilter.mesh = badMesh;
+                    if (badMesh) meshFilter.mesh = badMesh;
+                    meshRenderer.material.color = Color.red;
                     break;
                 case NodeType.Destination:
-                    meshFilter.mesh = destinationMesh;
+                    if (destinationMesh) meshFilter.mesh = destinationMesh;
+                    meshRenderer.material.color = Color.green;
                     break;
                 default:
                     break;
             }
+        }
+
+        public NodeType DoSomethingToPlayerBasedOnNodeType()
+        {
+            switch (Type)
+            {
+                case NodeType.Normal:
+                    break;
+                case NodeType.Bad:
+                    Debug.Log("Bad node");
+                    SetType(NodeType.Normal);
+                    return NodeType.Bad;
+                case NodeType.Destination:
+                    Debug.Log("Destination node");
+                    // add points
+
+                    NerveSystem.Instance.Restart();
+                    return NodeType.Destination;
+                default:
+                    break;
+            }
+            return Type;
         }
 
         // public Node(Vector2 position, Node parent = null)

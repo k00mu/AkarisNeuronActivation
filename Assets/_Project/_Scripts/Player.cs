@@ -25,6 +25,8 @@ namespace Akari
 
         private Expression akariExpression;
 
+        [SerializeField] private GameObject dustFX;
+
         private void Awake()
         {
             #region singleton
@@ -135,6 +137,11 @@ namespace Akari
                 return;
             }
 
+            if (dustFX != null)
+            {
+                StartCoroutine(DestroyDust(Instantiate(dustFX, Position, Quaternion.identity), 3));
+            }
+
             Position = newPosition;
             transform.position = Position;
 
@@ -143,6 +150,12 @@ namespace Akari
             NodeType expression = nextNode.DoSomethingToPlayerBasedOnNodeType();
 
             akariExpression.SetExpression(expression);
+        }
+
+        private IEnumerator DestroyDust(GameObject dust, int afterSecond)
+        {
+            yield return new WaitForSeconds(afterSecond);
+            Destroy(dust);
         }
     }
 }

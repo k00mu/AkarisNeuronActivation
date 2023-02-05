@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace Akari
 {
@@ -92,6 +93,14 @@ namespace Akari
             {
                 timer.StopTimer();
                 GameOver = true;
+            }
+
+            if (GameOver)
+            {
+                if (Input.GetKeyDown(KeyCode.R))
+                {
+                    SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+                }
             }
         }
 

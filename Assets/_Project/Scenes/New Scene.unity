@@ -316,7 +316,7 @@ AudioSource:
   OutputAudioMixerGroup: {fileID: 0}
   m_audioClip: {fileID: 8300000, guid: 80ac8ef0e33e10b49aa5c61d38dd438f, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.5
   m_Pitch: 1
   Loop: 0
   Mute: 0
@@ -772,27 +772,27 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_AnchorMax.x
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_AnchorMax.y
-      value: 0.5
+      value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_AnchorMin.x
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_AnchorMin.y
-      value: 0.5
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_SizeDelta.x
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_SizeDelta.y
-      value: 100
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_LocalScale.x
@@ -816,7 +816,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_LocalPosition.z
-      value: -841.7765
+      value: -841.77637
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_LocalRotation.w
@@ -840,7 +840,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_AnchoredPosition.y
-      value: -9.353072
+      value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 7741588211219024114, guid: 4dc823c6687ee4749954cacc39ad3d79, type: 3}
       propertyPath: m_LocalEulerAnglesHint.x

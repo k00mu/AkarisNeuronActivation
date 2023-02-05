@@ -93,9 +93,10 @@ MonoBehaviour:
   linePrefab: {fileID: -8634279176057645556, guid: e0b814964567d6440b7ff535c1af7aad, type: 3}
   minimumDistance: 1
   travelDistance: 5
+  Score: 0
   timer: {fileID: 0}
   nodePositionList: []
-  badNodeCount: 15
+  badNodeCount: 25
 --- !u!65 &2065767079086608552
 BoxCollider:
   m_ObjectHideFlags: 0
